@@ -3,9 +3,9 @@ Title: Probability and Statistics R 'Shiny' Modules
 Version: 0.1.0.9000
 Authors@R: 
     person(person("Mohammed", "Ali",      role = c("aut", "cre"), email   = "mohammed@aggregate-genius.com"),)
-Description: Reporository for different'shiny' module that are specialized in in analyzing data using Probability and
-             Statistics. Analysis output is presented via attractive `shiny` output and interactive `cavasXpress` <https://cran.r-project.org/package=canvasXpress>
-             plot package.
+Description: Repository for different 'shiny' modules that are specialized in in analyzing data using Probability and
+             Statistics methods. Analysis output is presented via attractive `shiny` output and interactive `cavasXpress` <https://cran.r-project.org/package=canvasXpress>
+             plots.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
