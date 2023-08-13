@@ -2,7 +2,7 @@ Package: DataAnalyzer
 Title: Probability and Statistics R 'Shiny' Modules
 Version: 0.1.0.9000
 Authors@R: 
-    person(person("Mohammed", "Ali",      role = c("aut", "cre"), email   = "mohammed@aggregate-genius.com"),)
+    person("Mohammed", "Ali",  role = c("aut", "cre"), email   = "mohammed@aggregate-genius.com")
 Description: Repository for different 'shiny' modules that are specialized in in analyzing data using Probability and
              Statistics methods. Analysis output is presented via attractive `shiny` output and interactive `cavasXpress` <https://cran.r-project.org/package=canvasXpress>
              plots.
