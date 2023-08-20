@@ -97,7 +97,7 @@ analyze_numerical_variable <- function(variable_data, var_type) {
 
 
 analyze_date_variable <- function(variable_data) {
-    shiny::fluidRow(shiny::column(width = 4,
+    shiny::fluidRow(shiny::column(width = 12,
                                   get_info_row(label = "Variable Type:",
                                                value = "Date"),
                                   get_info_row(label = "Missing Observations Stat.:",
@@ -127,7 +127,7 @@ analyze_factor_variable <- function(variable_data) {
 
 analyze_character_variable <- function(variable_data,
                                        variable_type = "character") {
-    shiny::fluidRow(shiny::column(width = 4,
+    shiny::fluidRow(shiny::column(width = 12,
                                   get_info_row(label = "Variable Type:",
                                                value = variable_type),
                                   get_info_row(label = "Missing Observations Stat.:",
