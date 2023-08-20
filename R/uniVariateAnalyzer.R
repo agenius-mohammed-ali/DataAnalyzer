@@ -165,7 +165,7 @@ plot_numerical <- function(variable_data,
     ylabel <- "Distribution"
 
     if (plot_density) {
-        canvasXpress(
+        canvasXpress::canvasXpress(
             data                 = variable_data,
             graphType            = "Scatter2D",
             histogramBins        = 10,
@@ -177,7 +177,7 @@ plot_numerical <- function(variable_data,
             histogramData        = TRUE,
             showHistogramDensity = TRUE)
     } else {
-        canvasXpress(
+        canvasXpress::canvasXpress(
             data          = data,
             graphType     = "Scatter2D",
             histogramBins = 10,
@@ -230,7 +230,7 @@ plot_factor <- function(variable_data,
     plot_data[[variable_name]] <- NULL
     plot_data                  <- t(plot_data)
 
-    canvasXpress(
+    canvasXpress::canvasXpress(
         data             = plot_data,
         graphOrientation = "vertical",
         graphType        = "Bar",
