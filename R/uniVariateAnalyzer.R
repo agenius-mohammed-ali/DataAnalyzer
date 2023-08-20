@@ -100,10 +100,6 @@ analyze_date_variable <- function(variable_data) {
                                               value = median(variable_data, na.rm = TRUE)),
                                  get_info_row(label = "Mode:",
                                               value = statistical_mode(variable_data)),
-                                 get_info_row(label = "1st Quantile:",
-                                              value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
-                                 get_info_row(label = "3rd Quantile:",
-                                              value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
                                  get_info_row(label = "Max:",
                                               value = max(variable_data, na.rm = TRUE)),
                                  get_info_row(label = "Min:",
@@ -213,7 +209,7 @@ plot_factor <- function(variable_data,
 
     if (is.null(date_group)) {
         plot_data <- variable_data %>%
-            dplyr::group_by(.data[[variable_name]])
+            dplyr::group_by(dplyr::across(variable_name))
     } else if (data_group == "year") {
         plot_data <- variable_data %>%
             dplyr::group_by(lubridate::year(.data[[variable_name]]))
@@ -222,7 +218,7 @@ plot_factor <- function(variable_data,
             dplyr::group_by(lubridate::month(.data[[variable_name]]))
     }
 
-    plot_data <- variable_data %>%
+    plot_data <- plot_data %>%
         dplyr::summarise(count = dplyr::n()) %>%
         as.data.frame()
     rownames(plot_data)        <- plot_data[[variable_name]]
