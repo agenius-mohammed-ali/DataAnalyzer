@@ -153,7 +153,8 @@ get_info_row <- function(label, value) {
     shiny::fluidRow(shiny::column(width = 6,
                                   label),
                     shiny::column(width = 6,
-                                  get_badge(value)))
+                                  shiny::tags$div(get_badge(value),
+                                                  style = "float: right;")))
 }
 
 
@@ -213,17 +214,17 @@ plot_factor <- function(variable_data,
 
     if (is.null(date_group)) {
         plot_data <- variable_data %>%
-            group_by(.data[[variable_name]])
+            dplyr::group_by(.data[[variable_name]])
     } else if (data_group == "year") {
         plot_data <- variable_data %>%
-            group_by(lubridate::year(.data[[variable_name]]))
+            dplyr::group_by(lubridate::year(.data[[variable_name]]))
     } else {
         plot_data <- variable_data %>%
-            group_by(lubridate::month(.data[[variable_name]]))
+            dplyr::group_by(lubridate::month(.data[[variable_name]]))
     }
 
     plot_data <- variable_data %>%
-        summarise(count = n()) %>%
+        dplyr::summarise(count = dplyr::n()) %>%
         as.data.frame()
     rownames(plot_data)        <- plot_data[[variable_name]]
     plot_data[[variable_name]] <- NULL
