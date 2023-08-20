@@ -1,6 +1,6 @@
 #' @export
 statistical_mode <- function(variable_data) {
-    #variable_data <- na.omit(variable_data)
+    variable_data <- na.omit(variable_data)
     unique_values <- unique(variable_data)
     frequencies   <- tabulate(match(variable_data, unique_values))
     unique_values[frequencies == max(frequencies)]
