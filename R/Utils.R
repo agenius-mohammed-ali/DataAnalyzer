@@ -1,5 +1,6 @@
 #' @export
 statistical_mode <- function(variable_data) {
+    #variable_data <- na.omit(variable_data)
     unique_values <- unique(variable_data)
     frequencies   <- tabulate(match(variable_data, unique_values))
     unique_values[frequencies == max(frequencies)]
@@ -34,8 +35,8 @@ get_missing_observations_summary <- function(variable_data) {
 
     if (rows_no > 0) {
         missing_observations_count   <- sum(is.na(variable_data))
-        missing_observations_percent <- round(missing_observations_count/NROW(variable_data), 4)
-        missing_observations_summary <- paste0(missing_observations_count, "(", missing_observations_percent, ")")
+        missing_observations_percent <- round(missing_observations_count/NROW(variable_data), 4) * 100
+        missing_observations_summary <- paste0(missing_observations_count, " (", missing_observations_percent, "%)")
     }
 
     missing_observations_summary
