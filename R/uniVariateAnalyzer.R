@@ -13,121 +13,129 @@ uniVariateAnalyzerUI <- function(id) {
 
 #' @export
 uniVariateAnalyzerServer <- function(id,
-                                     target_variable,
+                                     variable_data,
                                      variable_label = "",
                                      plot_density   = FALSE,
                                      date_group     = NULL) {
     shiny::moduleServer(id, function(input, output, session) {
-        variable_type <- get_variable_type(target_variable = target_variable)
-        data          <- as.data.frame(target_variable)
+        if (!all(!is.null(variable_data),
+                 NROW(variable_data) > 0,
+                 NCOL(variable_data) == 1)) {
+            warning("Module setup is incorrect, please check your setup")
+        } else {
+            variable_type <- get_variable_type(variable_data = variable_data)
+            data          <- as.data.frame(variable_data)
 
-        if (!is.null(variable_label) && (variable_label != "")) {
-            names(data) <- variable_label
+            if (!is.null(variable_label) && (variable_label != "")) {
+                names(data) <- variable_label
+            }
+
+            output$stat_tab <- shiny::renderUI({
+                if (variable_type %in%  c("double", "integer")) {
+                    analyze_numerical_variable(variable_data = variable_data,
+                                               variable_data = variable_type)
+                } else if (variable_type == "Date") {
+                    analyze_date_variable(variable_data = variable_data)
+                } else if (variable_type == "factor") {
+                    analyze_factor_variable(variable_data = variable_data)
+                } else if (variable_type == "character") {
+                    analyze_character_variable(variable_data = variable_data)
+                } else {
+                    "The variable is a key (distinct values for each observation)"
+                }
+            })
+
+            output$stat_plot <- shiny::renderUI({
+                if (variable_type %in%  c("double", "integer")) {
+                    plot_numerical(variable_data = data,
+                                   plot_density  = plot_density)
+                } else if (variable_type == "Date") {
+                    plot_date(variable_data = data,
+                              variable_name = variable_label,
+                              date_group    = date_group)
+                } else if (variable_type == "factor") {
+                    plot_factor(variable_data = data,
+                                variable_name = variable_label)
+                } else {
+                    paste("No available plot for type", variable_type)
+                }
+            })
         }
 
-        output$stat_tab <- shiny::renderUI({
-            if (variable_type %in%  c("double", "integer")) {
-                analyze_numerical_variable(target_variable = target_variable,
-                                           target_variable = variable_type)
-            } else if (variable_type == "Date") {
-                analyze_date_variable(target_variable = target_variable)
-            } else if (variable_type == "factor") {
-                analyze_factor_variable(target_variable = target_variable)
-            } else if (variable_type == "character") {
-                analyze_character_variable(target_variable = target_variable)
-            } else {
-                "The variable is a key (distinct values for each observation)"
-            }
-        })
 
-        output$stat_plot <- shiny::renderUI({
-            if (variable_type %in%  c("double", "integer")) {
-                plot_numerical(variable_data = data,
-                               plot_density  = plot_density)
-            } else if (variable_type == "Date") {
-                plot_date(variable_data = data,
-                          variable_name = variable_label,
-                          date_group    = date_group)
-            } else if (variable_type == "factor") {
-                plot_factor(variable_data = data,
-                            variable_name = variable_label)
-            } else {
-                paste("No available plot for type", variable_type)
-            }
-        })
     })
 }
 
 
 # -- Helper functions --
 
-analyze_numerical_variable <- function(target_variable, var_type) {
+analyze_numerical_variable <- function(variable_data, var_type) {
     shiny::fluidRow(shiny::column(width = 12,
                                   get_info_row(label = "Variable Type:",
                                                value = var_type),
                                   get_info_row(label = "Missing Observations Stat.:",
-                                               value = get_missing_observations_summary(target_variable = target_variable)),
+                                               value = get_missing_observations_summary(variable_data = variable_data)),
                                   get_info_row(label = "Unique Values:",
-                                               value = length(unique(na.omit(target_variable)))),
+                                               value = length(unique(na.omit(variable_data)))),
                                   get_info_row(label = "Median:",
-                                               value = round(median(target_variable, na.rm = TRUE), 2)),
+                                               value = round(median(variable_data, na.rm = TRUE), 2)),
                                   get_info_row(label = "Mode:",
-                                               value = round(statistical_mode(target_variable), 2)),
+                                               value = round(statistical_mode(variable_data), 2)),
                                   get_info_row(label = "Variance:",
-                                               value = round(stats::var(target_variable, na.rm = TRUE), 2)),
+                                               value = round(stats::var(variable_data, na.rm = TRUE), 2)),
                                   get_info_row(label = "Standard Deviation:",
-                                               value = round(stats::sd(target_variable, na.rm = TRUE), 2)),
+                                               value = round(stats::sd(variable_data, na.rm = TRUE), 2)),
                                   get_info_row(label = "1st Quantile:",
-                                               value = round(stats::quantile(target_variable, 1/4, na.rm = TRUE), 2)),
+                                               value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
                                   get_info_row(label = "3rd Quantile:",
-                                               value = round(stats::quantile(target_variable, 3/4, na.rm = TRUE), 2)),
+                                               value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
                                   get_info_row(label = "Max:",
-                                               value = max(target_variable, na.rm = TRUE)),
+                                               value = max(variable_data, na.rm = TRUE)),
                                   get_info_row(label = "Min:",
-                                               value = min(target_variable, na.rm = TRUE))))
+                                               value = min(variable_data, na.rm = TRUE))))
 }
 
 
-analyze_date_variable <- function(target_variable) {
+analyze_date_variable <- function(variable_data) {
     shiny::fluidRow(shiny::column(width = 4,
                                   get_info_row(label = "Variable Type:",
                                                value = "Date"),
                                   get_info_row(label = "Missing Observations Stat.:",
-                                               value = get_missing_observations_summary(target_variable = target_variable)),
+                                               value = get_missing_observations_summary(variable_data = variable_data)),
                                   get_info_row(label = "Unique Values:",
-                                               value = length(unique(na.omit(target_variable)))),
+                                               value = length(unique(na.omit(variable_data)))),
                                   get_info_row(label = "Median:",
-                                               value = median(target_variable, na.rm = TRUE)),
+                                               value = median(variable_data, na.rm = TRUE)),
                                   get_info_row(label = "Mode:",
-                                               value = statistical_mode(target_variable)),
+                                               value = statistical_mode(variable_data)),
                                   get_info_row(label = "1st Quantile:",
-                                               value = round(stats::quantile(target_variable, 1/4, na.rm = TRUE), 2)),
+                                               value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
                                   get_info_row(label = "3rd Quantile:",
-                                               value = round(stats::quantile(target_variable, 3/4, na.rm = TRUE), 2)),
+                                               value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
                                   get_info_row(label = "Max:",
-                                               value = max(target_variable, na.rm = TRUE)),
+                                               value = max(variable_data, na.rm = TRUE)),
                                   get_info_row(label = "Min:",
-                                               value = min(target_variable, na.rm = TRUE))))
+                                               value = min(variable_data, na.rm = TRUE))))
 }
 
 
-analyze_factor_variable <- function(target_variable) {
-    analyze_character_variable(target_variable = target_variable,
+analyze_factor_variable <- function(variable_data) {
+    analyze_character_variable(variable_data = variable_data,
                                variable_type   = "factor")
 }
 
 
-analyze_character_variable <- function(target_variable,
+analyze_character_variable <- function(variable_data,
                                        variable_type = "character") {
     shiny::fluidRow(shiny::column(width = 4,
                                   get_info_row(label = "Variable Type:",
                                                value = variable_type),
                                   get_info_row(label = "Missing Observations Stat.:",
-                                               value = get_missing_observations_summary(target_variable = target_variable)),
+                                               value = get_missing_observations_summary(variable_data = variable_data)),
                                   get_info_row(label = "Unique Values:",
-                                               value = length(unique(na.omit(target_variable)))),
+                                               value = length(unique(na.omit(variable_data)))),
                                   get_info_row(label = "Mode:",
-                                               value = statistical_mode(target_variable))))
+                                               value = statistical_mode(variable_data))))
 }
 
 get_badge <- function(value,

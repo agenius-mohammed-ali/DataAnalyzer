@@ -1,26 +1,26 @@
 #' @export
-statistical_mode <- function(target_variable) {
-    unique_values <- unique(target_variable)
-    frequencies   <- tabulate(match(target_variable, unique_values))
+statistical_mode <- function(variable_data) {
+    unique_values <- unique(variable_data)
+    frequencies   <- tabulate(match(variable_data, unique_values))
     unique_values[frequencies == max(frequencies)]
 }
 
 
 #' @export
-get_variable_type <- function(target_variable, categories_number = 5) {
+get_variable_type <- function(variable_data, categories_number = 5) {
     var_type <- "character"
 
-    if (NROW(target_variable) == length(unique(target_variable))) {
+    if (NROW(variable_data) == length(unique(variable_data))) {
         var_type <- "ID"
-    } else if (length(unique(target_variable)) <= categories_number) {
+    } else if (length(unique(variable_data)) <= categories_number) {
         var_type <- "factor"
-    } else if (is.numeric(target_variable)) {
+    } else if (is.numeric(variable_data)) {
         #var_type <- "numeric" #EX: make it more specific
         var_type <- "double"
-        if (all(target_variable == round(target_variable))) {
+        if (all(variable_data == round(variable_data))) {
             var_type <- "integer"
         }
-    } else if (inherits(target_variable, c("Date", "POSIXt"))) {
+    } else if (inherits(variable_data, c("Date", "POSIXt"))) {
         var_type <- "Date"
     }
 
@@ -28,13 +28,13 @@ get_variable_type <- function(target_variable, categories_number = 5) {
 }
 
 #' @export
-get_missing_observations_summary <- function(target_variable) {
+get_missing_observations_summary <- function(variable_data) {
     missing_observations_summary <- ""
-    rows_no                      <- NROW(target_variable)
+    rows_no                      <- NROW(variable_data)
 
     if (rows_no > 0) {
-        missing_observations_count   <- sum(is.na(target_variable))
-        missing_observations_percent <- round(missing_observations_count/NROW(target_variable), 4)
+        missing_observations_count   <- sum(is.na(variable_data))
+        missing_observations_percent <- round(missing_observations_count/NROW(variable_data), 4)
         missing_observations_summary <- paste0(missing_observations_count, "(", missing_observations_percent, ")")
     }
 
