@@ -70,72 +70,71 @@ uniVariateAnalyzerServer <- function(id,
 # -- Helper functions --
 
 analyze_numerical_variable <- function(variable_data, var_type) {
-    shiny::fluidRow(shiny::column(width = 12,
-                                  get_info_row(label = "Variable Type:",
-                                               value = var_type),
-                                  get_info_row(label = "Missing Observations Stat.:",
-                                               value = get_missing_observations_summary(variable_data = variable_data)),
-                                  get_info_row(label = "Unique Values:",
-                                               value = length(unique(na.omit(variable_data)))),
-                                  get_info_row(label = "Median:",
-                                               value = round(median(variable_data, na.rm = TRUE), 2)),
-                                  get_info_row(label = "Mode:",
-                                               value = round(statistical_mode(variable_data), 2)),
-                                  get_info_row(label = "Variance:",
-                                               value = round(stats::var(variable_data, na.rm = TRUE), 2)),
-                                  get_info_row(label = "Standard Deviation:",
-                                               value = round(stats::sd(variable_data, na.rm = TRUE), 2)),
-                                  get_info_row(label = "1st Quantile:",
-                                               value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
-                                  get_info_row(label = "3rd Quantile:",
-                                               value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
-                                  get_info_row(label = "Max:",
-                                               value = max(variable_data, na.rm = TRUE)),
-                                  get_info_row(label = "Min:",
-                                               value = min(variable_data, na.rm = TRUE))))
+    shiny::tagList(shiny::column(width = 12,
+                                 get_common_stats(variable_data = variable_data ,
+                                                  variable_type = "Date"),
+                                 get_info_row(label = "Median:",
+                                              value = round(median(variable_data, na.rm = TRUE), 2)),
+                                 get_info_row(label = "Mode:",
+                                              value = round(statistical_mode(variable_data), 2)),
+                                 get_info_row(label = "Variance:",
+                                              value = round(stats::var(variable_data, na.rm = TRUE), 2)),
+                                 get_info_row(label = "Standard Deviation:",
+                                              value = round(stats::sd(variable_data, na.rm = TRUE), 2)),
+                                 get_info_row(label = "1st Quantile:",
+                                              value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
+                                 get_info_row(label = "3rd Quantile:",
+                                              value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
+                                 get_info_row(label = "Max:",
+                                              value = max(variable_data, na.rm = TRUE)),
+                                 get_info_row(label = "Min:",
+                                              value = min(variable_data, na.rm = TRUE))))
 }
 
 
 analyze_date_variable <- function(variable_data) {
-    shiny::fluidRow(shiny::column(width = 12,
-                                  get_info_row(label = "Variable Type:",
-                                               value = "Date"),
-                                  get_info_row(label = "Missing Observations Stat.:",
-                                               value = get_missing_observations_summary(variable_data = variable_data)),
-                                  get_info_row(label = "Unique Values:",
-                                               value = length(unique(na.omit(variable_data)))),
-                                  get_info_row(label = "Median:",
-                                               value = median(variable_data, na.rm = TRUE)),
-                                  get_info_row(label = "Mode:",
-                                               value = statistical_mode(variable_data)),
-                                  get_info_row(label = "1st Quantile:",
-                                               value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
-                                  get_info_row(label = "3rd Quantile:",
-                                               value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
-                                  get_info_row(label = "Max:",
-                                               value = max(variable_data, na.rm = TRUE)),
-                                  get_info_row(label = "Min:",
-                                               value = min(variable_data, na.rm = TRUE))))
+    shiny::tagList(shiny::column(width = 12,
+                                 get_common_stats(variable_data = variable_data ,
+                                                  variable_type = "Date"),
+                                 get_info_row(label = "Median:",
+                                              value = median(variable_data, na.rm = TRUE)),
+                                 get_info_row(label = "Mode:",
+                                              value = statistical_mode(variable_data)),
+                                 get_info_row(label = "1st Quantile:",
+                                              value = round(stats::quantile(variable_data, 1/4, na.rm = TRUE), 2)),
+                                 get_info_row(label = "3rd Quantile:",
+                                              value = round(stats::quantile(variable_data, 3/4, na.rm = TRUE), 2)),
+                                 get_info_row(label = "Max:",
+                                              value = max(variable_data, na.rm = TRUE)),
+                                 get_info_row(label = "Min:",
+                                              value = min(variable_data, na.rm = TRUE))))
 }
 
 
 analyze_factor_variable <- function(variable_data) {
-    analyze_character_variable(variable_data = variable_data,
-                               variable_type   = "factor")
+    shiny::tagList(get_common_stats(variable_data = variable_data ,
+                                    variable_type = "factor"),
+                   get_info_row(label = "Mode:",
+                                value = statistical_mode(variable_data)))
 }
 
 
 analyze_character_variable <- function(variable_data,
                                        variable_type = "character") {
+    get_common_stats(variable_data = variable_data,
+                     variable_type = variable_type)
+}
+
+
+get_common_stats <- function(variable_data,
+                             variable_type = "character") {
     shiny::fluidRow(shiny::column(width = 12,
                                   get_info_row(label = "Variable Type:",
                                                value = variable_type),
                                   get_info_row(label = "Missing Observations Stat.:",
                                                value = get_missing_observations_summary(variable_data = variable_data)),
-                                  get_info_row(label = "Unique Values:",
-                                               value = length(unique(na.omit(variable_data)))),
-                                  get_info_row(label = "Mode:",
-                                               value = statistical_mode(variable_data))))
+                                  get_info_row(label = "Unique Values Count:",
+                                               value = length(unique(na.omit(variable_data))))))
 }
 
 get_badge <- function(value,
