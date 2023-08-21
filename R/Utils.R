@@ -21,7 +21,7 @@ get_variable_type <- function(variable_data, categories_number = 5) {
         if (all(variable_data == round(variable_data))) {
             var_type <- "integer"
         }
-    } else if (inherits(variable_data, c("Date", "POSIXt"))) {
+    } else if (inherits(anytime::anydate(variable_data), c("Date", "POSIXt"))) {
         var_type <- "Date"
     }
 
