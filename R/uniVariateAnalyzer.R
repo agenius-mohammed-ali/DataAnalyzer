@@ -33,7 +33,7 @@ uniVariateAnalyzerServer <- function(id,
             output$stat_tab <- shiny::renderUI({
                 if (variable_type %in%  c("double", "integer")) {
                     analyze_numerical_variable(variable_data = variable_data,
-                                               variable_data = variable_type)
+                                               variable_type = variable_type)
                 } else if (variable_type == "Date") {
                     analyze_date_variable(variable_data = variable_data)
                 } else if (variable_type == "factor") {
@@ -69,10 +69,10 @@ uniVariateAnalyzerServer <- function(id,
 
 # -- Helper functions --
 
-analyze_numerical_variable <- function(variable_data, var_type) {
+analyze_numerical_variable <- function(variable_data, variable_type) {
     shiny::tagList(shiny::column(width = 12,
                                  get_common_stats(variable_data = variable_data ,
-                                                  variable_type = "Date"),
+                                                  variable_type = variable_type),
                                  get_info_row(label = "Median:",
                                               value = round(median(variable_data, na.rm = TRUE), 2)),
                                  get_info_row(label = "Mode:",
@@ -173,7 +173,7 @@ plot_numerical <- function(variable_data,
             showHistogramDensity = TRUE)
     } else {
         canvasXpress::canvasXpress(
-            data          = data,
+            data          = variable_data,
             graphType     = "Scatter2D",
             histogramBins = 10,
             title         = title,
