@@ -9,6 +9,18 @@ statistical_mode <- function(variable_data) {
 
 #' @export
 get_variable_type <- function(variable_data, categories_number = 5) {
+    assertthat::assert_that(NROW(variable_data) > 0,
+                            NCOL(variable_data) == 1,
+                            all(!is.na(variable_data)),
+                            all(as.character(variable_data) != ""),
+                            msg = "Passed data is invalid or empty, please check your setup")
+
+    if (is.null(categories_number) ||
+        is.na(categories_number) ||
+        !is.numeric(categories_number)) {
+        message("'categories_number' has invalid value, setting it to default value '5'")
+    }
+#date vefire nunber?
     var_type <- "character"
 
     if (NROW(variable_data) == length(unique(variable_data))) {
