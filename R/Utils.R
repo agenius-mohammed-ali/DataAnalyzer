@@ -19,13 +19,17 @@ get_variable_type <- function(variable_data, categories_number = 5) {
         is.na(categories_number) ||
         !is.numeric(categories_number)) {
         message("'categories_number' has invalid value, setting it to default value '5'")
+        categories_number <- 5
     }
-#date vefire nunber?
+
     var_type <- "character"
+    is_id    <- FALSE
 
     if (NROW(variable_data) == length(unique(variable_data))) {
-        var_type <- "ID"
-    } else if (length(unique(variable_data)) <= categories_number) {
+        is_id <- TRUE
+    }
+
+    if (length(unique(variable_data)) <= categories_number) {
         var_type <- "factor"
     } else if (is.numeric(variable_data)) {
         #var_type <- "numeric" #EX: make it more specific
@@ -33,12 +37,17 @@ get_variable_type <- function(variable_data, categories_number = 5) {
         if (all(variable_data == round(variable_data))) {
             var_type <- "integer"
         }
-    } else if (inherits(anytime::anydate(variable_data), c("Date", "POSIXt"))) {
+    } else if (inherits(variable_data, c("Date", "POSIXt"))) {
         var_type <- "Date"
+    }
+
+    if (is_id) {
+        var_type <- paste0(var_type, "(ID)")
     }
 
     var_type
 }
+
 
 #' @export
 get_missing_observations_summary <- function(variable_data) {
