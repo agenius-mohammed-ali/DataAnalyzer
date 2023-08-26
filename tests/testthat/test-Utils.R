@@ -29,12 +29,38 @@ test_that("get_variable_type", {
     expect_error(get_variable_type(c("", "")), "Passed data is invalid or empty, please check your setup")
     expect_error(get_variable_type(iris), "Passed data is invalid or empty, please check your setup")
 
+    # test category number
+    expect_message(get_variable_type(iris$Sepal.Length, categories_number = NULL), "'categories_number' has invalid value, setting it to default value '5'")
+    expect_message(get_variable_type(iris$Sepal.Length, categories_number = NA), "'categories_number' has invalid value, setting it to default value '5'")
+    expect_message(get_variable_type(iris$Sepal.Length, categories_number = "5"), "'categories_number' has invalid value, setting it to default value '5'")
+    expect_equal(get_variable_type(iris$Species, categories_number = 1), "character")
+
     # test single value
-    expect_equal(get_variable_type(1), "ID")
-    expect_equal(get_variable_type("1"), "ID")
+    expect_equal(get_variable_type(1), "factor(ID)")
+    expect_equal(get_variable_type("1"), "factor(ID)")
 
     # test vector
     expect_equal(get_variable_type(iris$Sepal.Length), "double")
     expect_equal(get_variable_type(iris$Species), "factor")
     expect_equal(get_variable_type(mtcars$hp), "integer")
+
+    mts <- as.numeric(time(AirPassengers))
+    tms <- lubridate::date_decimal(mts)
+    expect_equal(get_variable_type(tms), "Date(ID)")
+
+    expect_equal(get_variable_type(lubridate::as_date(iris$Sepal.Length)), "Date")
+})
+
+test_that("get_variable_type", {
+    # test no arguments
+    expect_error(get_missing_observations_summary())
+
+    # test different values
+    expect_equal(get_missing_observations_summary(""), "0 (0%)")
+    expect_equal(get_missing_observations_summary(NA), "1 (100%)")
+    expect_equal(get_missing_observations_summary(NULL), "")
+    expect_equal(get_missing_observations_summary(c("", "")), "0 (0%)")
+    expect_equal(get_missing_observations_summary(iris), "0 (0%)")
+    expect_equal(get_missing_observations_summary(presidents), "6 (5%)")
+
 })
