@@ -12,11 +12,11 @@ uniVariateAnalyzerUI <- function(id) {
 
 
 #' @export
-uniVariateAnalyzerServer <- function(id,
-                                     variable_data,
-                                     variable_label = "",
-                                     plot_density   = FALSE,
-                                     date_group     = NULL) {
+uniVariateAnalyzer <- function(id,
+                               variable_data,
+                               variable_label = "",
+                               plot_density   = FALSE,
+                               date_group     = NULL) {
     shiny::moduleServer(id, function(input, output, session) {
         if (!all(!is.null(variable_data),
                  NROW(variable_data) > 0,
@@ -27,7 +27,9 @@ uniVariateAnalyzerServer <- function(id,
             data          <- as.data.frame(variable_data)
 
             if (!is.null(variable_label) && (variable_label != "")) {
-                names(data) <- variable_label
+                colnames(data) <- variable_label
+            } else {
+                variable_label <- colnames(data)
             }
 
             output$stat_tab <- shiny::renderUI({
@@ -145,6 +147,7 @@ get_badge <- function(value,
 
 
 get_info_row <- function(label, value) {
+    value <- paste(value, collapse = ", ")
     shiny::fluidRow(shiny::column(width = 6,
                                   label),
                     shiny::column(width = 6,
@@ -196,6 +199,10 @@ plot_date <- function(variable_data,
         date_group <- tolower(date_group)
     }
 
+    if (is.null(date_group)) {
+        date_group <- "ymd"
+    }
+
     plot_factor(variable_data = variable_data,
                 variable_name = variable_name,
                 date_group    = date_group)
@@ -205,22 +212,27 @@ plot_date <- function(variable_data,
 plot_factor <- function(variable_data,
                         variable_name,
                         date_group = NULL) {
+
     plot_data <- tidyr::drop_na(variable_data)
 
-    if (is.null(date_group)) {
-        plot_data <- plot_data %>%
-            dplyr::group_by(dplyr::across(variable_name))
-    } else if (data_group == "year") {
-        plot_data <- plot_data %>%
-            dplyr::group_by(lubridate::year(.data[[variable_name]]))
-    } else {
-        plot_data <- plot_data %>%
-            dplyr::group_by(lubridate::month(.data[[variable_name]]))
+    if (!is.null(date_group)) {
+        if (date_group == "ymd") {
+            plot_data <- plot_data %>%
+                dplyr::mutate(!!variable_name := lubridate::ymd(.data[[variable_name]]))
+        } else if (date_group == "year") {
+            plot_data <- plot_data %>%
+                dplyr::mutate(!!variable_name := lubridate::year(.data[[variable_name]]))
+        } else {
+            plot_data <- plot_data %>%
+                dplyr::mutate(!!variable_name := lubridate::month(.data[[variable_name]]))
+        }
     }
 
     plot_data <- plot_data %>%
+        dplyr::group_by(dplyr::across(dplyr::any_of(variable_name))) %>%
         dplyr::summarise(count = dplyr::n()) %>%
         as.data.frame()
+
     rownames(plot_data)        <- plot_data[[variable_name]]
     plot_data[[variable_name]] <- NULL
     plot_data                  <- t(plot_data)
